@@ -1,17 +1,20 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class Game;
 
 class Food {
 public:
-    SDL_Rect body;
+    Food(Game& game);
 
-    Food(Game& game, int x, int y, int width, int height);
+    const auto& body() const { return this->body_; }
 
     void spawnRandom();
+    void render();
 
 private:
     Game& game_;
+    SDL_Rect body_;
+
 };

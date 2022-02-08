@@ -2,8 +2,8 @@
 
 #include <string> //string.
 #include <memory> //unique_ptr.
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "Snake.hpp"
 #include "Food.hpp"
@@ -30,7 +30,4 @@ public:
 private:
 	std::unique_ptr<SDL_Window, My_SDL_Deleter> window_;
 	std::unique_ptr<SDL_Renderer, My_SDL_Deleter> renderer_;
-
-	void renderRect_(SDL_Rect& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	void renderText_(const std::unique_ptr<SDL_Texture, My_SDL_Deleter>& texture, SDL_Rect& rect);
 };

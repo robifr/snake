@@ -7,14 +7,14 @@ Just search one with exact same version as the one used in this repository. Also
 In my case I'm using 64-bit Windows and MinGW, so I downloaded `SDL2-devel-2.0.20-mingw.tar.gz` variant for SDL2, and `SDL_ttf-devel-2.0.18-mingw.tar.gz` for SDL_ttf. The one named with `devel` will consist you with both 32-bit and 64-bit versions.
 
 ### Step-by-step
-1. You have to clone this repository first. Assumming you're already inside a specific directory, from your terminal type:
+1. You have to clone this repository first. Assumming you're already inside a specific directory, from your terminal, type:
 ```bash
 $ git clone https://github.com/robifr/snake.git
 ```
 
-2. Extract both of SDL2 and SDL2_ttf that you have downloaded earlier, and copy-paste all of them into `ext/` folder located inside our working directory tree.
+2. Extract both of SDL2 and SDL2_ttf that you have downloaded earlier, and copy-paste all of them into `ext/` folder located inside your working directory tree.
 
-3. Open `ext/` folder, look for a folder named `bin/` inside both of SDL2 and SDL2_ttf folders. Keep in mind that `i686` means 32-bit and `x86_64` means 64-bit. Copy and paste all binary files (don't include the `bin/` folder itself) into the `bin/` folder located in the root of our current working directory tree.
+3. Open `ext/` folder, look for a folder named `bin/` inside both of SDL2 and SDL2_ttf folders. Keep in mind that `i686` means 32-bit and `x86_64` means 64-bit. Copy and paste all binary files (don't include the `bin/` folder itself) into the `bin/` folder located in the root of your current working directory tree.
 
 Here's my current working directory tree:
 ```
@@ -27,7 +27,7 @@ Here's my current working directory tree:
 │   ├── SDL2_ttf-2.0.18/
 │   │   └── x86_64-w64-mingw32/
 │   │       ├── bin/
-│   │       |   └── SDL2_ttf.dll
+│   │       │   └── SDL2_ttf.dll
 │   │       ├── include/
 │   │       ├── lib/
 │   │       └── ...etc
@@ -46,14 +46,14 @@ Here's my current working directory tree:
 └── ...etc
 ```
 4. This one should be trivial. Open the file named `Makefile` in the root of directory tree, and look closely under `INCLUDES` and `LIBINCLUDES` fields. `INCLUDES` flagged with `-I` is lists of relative path for third-party library, in our case they're SDL2 and SDL2_ttf. And just like `INCLUDES`, `LIBINCLUDES` flagged with `-L` is lists of relative path for third-party linker. <br/><br/>
-Now reopen the `ext/` folder, look for a folder named `include/`, copy and paste their both relative path into the `INCLUDES` field inside our `Makefile`. Repeat those step again for `LIBINCLUDES`, but now look for a folder named `lib/`.
+Now reopen the `ext/` folder, look for a folder named `include/`, copy and paste their both relative path into the `INCLUDES` field inside our `Makefile`. Then, add `/SDL2` at the end of path. Repeat those step again for `LIBINCLUDES`, but now look for a folder named `lib/`.
 
 Here's part of my current Makefile as you can see from my respository:
 ```
 CXX := clang++
 
-INCLUDES := -Iext/SDL2-2.0.20/x86_64-w64-mingw32/include \
-            -Iext/SDL2_ttf-2.0.18/x86_64-w64-mingw32/include
+INCLUDES := -Iext/SDL2-2.0.20/x86_64-w64-mingw32/include/SDL2 \
+            -Iext/SDL2_ttf-2.0.18/x86_64-w64-mingw32/include/SDL2
 
 LIBINCLUDES :=  -Lext/SDL2-2.0.20/x86_64-w64-mingw32/lib \
                 -Lext/SDL2_ttf-2.0.18/x86_64-w64-mingw32/lib
@@ -61,20 +61,4 @@ LIBINCLUDES :=  -Lext/SDL2-2.0.20/x86_64-w64-mingw32/lib \
 ...etc
 ```
 
-5. Almost there. Every SDL2 and SDL_ttf headers are located inside `.../include/SDL2/` folder, and SDL2_ttf header requires SDL2 header to compile. But SDL2_ttf assumes they header is placed in the same directory path as SDL2 header. Surely compiler will throw a linker error when you try to compile, because we keep both library separated to make easier changes in future. <br/><br/>
-So we have to make slighty change to SDL2_ttf header. Reopen SDL2_ttf folder inside `ext/` folder, look for the `include/` folder that you was previously opened. Open all the header files one-by-one (the one with `.h` extension), add `SDL2/...` as prefix on every lines that declared as `#include "..."`.
-
-Example:
-```cpp
-//from:
-#include "SDL.h"
-#include "begin_code.h"
-#include "close_code.h"
-
-//become:
-#include "SDL2/SDL.h"
-#include "SDL2/begin_code.h"
-#include "SDL2/close_code.h"
-```
-
-6. Finally adjust the compiler options inside `CXX` field with your favorite C++ compiler. In my case I'm using Clang from MSYS2. Then type `make` command in your terminal to compile the code, and type `./bin/main` to run the executable after it's compiled.
+5. Finally adjust the compiler options inside `CXX` field with your favorite C++ compiler. In my case I'm using Clang from MSYS2. Then type `make` command in your terminal to compile the code, and type `./bin/main` to run the executable after it's compiled.

@@ -21,8 +21,8 @@ Game::Game(int width, int height, int gridWidth, int gridHeight) {
 	);
 	this->windowSurface = SDL_GetWindowSurface(this->window_.get());
 
-	this->snake = std::make_unique<Snake>(*this, gridWidth, gridHeight);
-	this->food = std::make_unique<Food>(*this, 0, 0, gridWidth, gridHeight);
+	this->snake = std::make_unique<Snake>(*this);
+	this->food = std::make_unique<Food>(*this);
 
 	this->inGameView = std::make_unique<InGameView>(*this);
 	this->gameOverView = std::make_unique<GameOverView>(*this);
@@ -53,32 +53,11 @@ void Game::render() {
 	SDL_RenderClear(this->renderer_.get());
 
 	//and then render all the stuff on top of it.
-	this->renderRect_(this->food->body, 250, 180, 30, 255); //yellow.
+	this->food->render();
+	this->snake->render();
+	this->inGameView->render();
 
-	for (int i = 0; i < this->snake->body.size(); i++) {
-		this->renderRect_(this->snake->body[i], 220, 20, 60, 225); //red.
-	}
-
-	this->renderRect_(this->inGameView->scoreContainer, 50, 50, 50, 255);
-	this->renderText_(this->inGameView->scoreText->texture, this->inGameView->scoreText->body);
-
-	if (!this->snake->isAlive) {
-		this->renderText_(
-			this->gameOverView->gameOverText->texture, 
-			this->gameOverView->gameOverText->body
-		);
-	}
+	if (!this->snake->isAlive) this->gameOverView->render();
 
 	SDL_RenderPresent(this->renderer_.get());
 }
-
-void Game::renderRect_(SDL_Rect& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	SDL_SetRenderDrawColor(this->renderer_.get(), red, green, blue, alpha);
-	SDL_RenderFillRect(this->renderer_.get(), &rect);
-}
-
-void Game::renderText_(
-	const std::unique_ptr<SDL_Texture, My_SDL_Deleter>& texture, 
-	SDL_Rect& rect) {
-	SDL_RenderCopy(this->renderer_.get(), texture.get(), NULL, &rect);
-} 

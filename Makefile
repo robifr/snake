@@ -5,8 +5,8 @@ SRC := $(wildcard src/*.cpp)
 OUT := -o bin/main
 
 INCLUDES := \
-			-Iext/SDL2-2.0.20/x86_64-w64-mingw32/include \
-			-Iext/SDL2_ttf-2.0.18/x86_64-w64-mingw32/include
+			-Iext/SDL2-2.0.20/x86_64-w64-mingw32/include/SDL2 \
+			-Iext/SDL2_ttf-2.0.18/x86_64-w64-mingw32/include/SDL2
 
 LIBINCLUDES := \
 				-Lext/SDL2-2.0.20/x86_64-w64-mingw32/lib \

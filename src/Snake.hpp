@@ -3,14 +3,13 @@
 #include <memory> //unique_ptr.
 #include <utility> //pair.
 #include <vector> //vector.
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class Game;
 class Food;
 
 class Snake {
 public:
-	std::vector<SDL_Rect> body;
 	double updateInterval = 150.0;
 	double lastTimeUpdate = 0.0;
 	bool isAlive = true;
@@ -22,23 +21,23 @@ public:
 	 */
 	std::vector<int> inputQueue;
 
-	Snake(Game& game, int width, int height);
+	Snake(Game& game);
 
-	/** 
-	 * change current snake direction based on keyboard input key-code. 
-	 * \param SDL_Event::key.keysym.sym
-	 */ 
+	const auto& body() const { return this->body_; }
+
+	/** \param SDL_Event::key.keysym.sym */ 
 	void changeDirection(int keyCode);
 
 	void move();
 	void addBody(int x, int y);
+	void respawn();
+	void render();
 
 private:
 	Game& game_;
-	int width_ = 0;
-	int height_ = 0;
+	std::vector<SDL_Rect> body_;
 	int deltaX_ = 0;
-	int deltaY_ = -15; //moving to top when the game just started.
+	int deltaY_ = 0;
 	int foodEaten_ = 0;
 
 	bool isEatingFood_(int x, int y, const std::unique_ptr<Food>& food);

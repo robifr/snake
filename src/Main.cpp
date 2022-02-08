@@ -1,8 +1,8 @@
 #include <iostream> //cerr.
 #include <cmath> //floor
 #include <cstdlib> //atexit.
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "Game.hpp"
 
@@ -28,14 +28,8 @@ int main(int argc, char* argv[]) {
 	const int windowHeight = std::floor(500 / gridHeight) * gridHeight;
 
 	Game game(windowWidth, windowHeight, gridWidth, gridHeight);
-
-	const int snakeX = std::floor(windowWidth / 2 / gridWidth) * gridWidth;
-	const int snakeY = std::floor(windowHeight / 2 / gridHeight) * gridHeight;
-
-	for (int i = 0; i < 3; i++) {
-		game.snake->addBody(snakeX, snakeY + (gridHeight * i));
-	}
 	game.food->spawnRandom();
+	game.snake->respawn();
 
 	SDL_Event event;
 	bool isClosed = false;
@@ -45,9 +39,15 @@ int main(int argc, char* argv[]) {
 			const int keyCode = event.key.keysym.sym;
 
 			if (event.type == SDL_KEYDOWN) {
-				if (game.snake->inputQueue.size() == 0
-					|| keyCode != game.snake->inputQueue.back()) {
+				if (game.snake->isAlive
+					&& (game.snake->inputQueue.size() == 0 || keyCode != game.snake->inputQueue.back())) {
 					game.snake->inputQueue.push_back(keyCode);
+				
+				} else if (!game.snake->isAlive) {
+					game.inGameView->setScore(0);
+					game.food->spawnRandom();
+					game.snake->respawn();
+					game.snake->isAlive = true;
 				}
 			
 			} else if (event.type == SDL_QUIT
